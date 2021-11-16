@@ -33,7 +33,7 @@ def discover():
         schema_meta = field_metadata[schema_name]
 
         if schema_name == 'conversations':
-            schema_meta["metadata"]["selected"] = True
+            schema_meta[0]["metadata"]["selected"] = True
                 
         catalog_entry = {
             'stream': schema_name,
