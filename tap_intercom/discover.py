@@ -32,7 +32,7 @@ def discover():
     for schema_name, schema in schemas.items():
         schema_meta = field_metadata[schema_name]
 
-        if schema_name in ['companies', 'users']:
+        if schema_name in ['companies', 'segments']:
             for elem in schema_meta:
                 elem["metadata"]["selected"] = True
             #schema_meta[0]["metadata"]["selected"] = True
