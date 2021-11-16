@@ -32,6 +32,9 @@ def discover():
     for schema_name, schema in schemas.items():
         schema_meta = field_metadata[schema_name]
 
+        if schema_name == 'conversations':
+            elem["metadata"]["selected"] = True
+                
         catalog_entry = {
             'stream': schema_name,
             'tap_stream_id': schema_name,
