@@ -33,9 +33,7 @@ def discover():
         schema_meta = field_metadata[schema_name]
 
         if schema_name in ['companies', 'segments', 'admins']:
-            for elem in schema_meta:
-                elem["metadata"]["selected"] = True
-            #schema_meta[0]["metadata"]["selected"] = True
+            schema_meta[0]["metadata"]["selected"] = True
                 
         catalog_entry = {
             'stream': schema_name,
