@@ -32,7 +32,7 @@ def discover():
     for schema_name, schema in schemas.items():
         schema_meta = field_metadata[schema_name]
 
-        if schema_name in ['admins_activity_logs']:
+        if schema_name in ['admin_activity_logs']:
             schema_meta[0]["metadata"]["selected"] = True
                 
         catalog_entry = {
