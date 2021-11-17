@@ -527,6 +527,13 @@
             "null",
             "boolean"
           ]
+        },
+        "custom_attributes": {
+          "type": [
+            "null",
+            "object"
+          ],
+        "additionalProperties": true
         }
       }
     }
