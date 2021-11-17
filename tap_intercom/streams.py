@@ -487,7 +487,7 @@ class AdminActivityLogs(IncrementalStream):
 
     Docs: https://developers.intercom.com/intercom-api-reference/v2.0/reference#search-for-contacts
     """
-    tap_stream_id = 'admins_activity_logs'
+    tap_stream_id = 'admin_activity_logs'
     key_properties = ['id']
     path = 'admins/activity_logs'
     replication_key = 'created_at'
