@@ -481,6 +481,60 @@ class Contacts(IncrementalStream):
 
             yield from records
 
+class AdminActivityLogs(IncrementalStream):
+    """
+    Retrieve contacts
+
+    Docs: https://developers.intercom.com/intercom-api-reference/v2.0/reference#search-for-contacts
+    """
+    tap_stream_id = 'admins_activity_logs'
+    key_properties = ['id']
+    path = 'admins/activity_logs'
+    replication_key = 'created_at'
+    valid_replication_keys = ['created_at']
+    data_key = 'activity_logs'
+    per_page = MAX_PAGE_SIZE
+
+
+    def get_records(self, bookmark_datetime=None, is_parent=False) -> Iterator[list]:
+        paging = True
+        starting_after = None
+        search_query = {
+            'pagination': {
+                'per_page': self.per_page
+            },
+            'query': {
+                'operator': 'OR',
+                'value': [{
+                    'field': self.replication_key,
+                    'operator': '>',
+                    'value': self.dt_to_epoch_seconds(bookmark_datetime)
+                    },
+                    {
+                    'field': self.replication_key,
+                    'operator': '=',
+                    'value': self.dt_to_epoch_seconds(bookmark_datetime)
+                    }]
+                },
+            'sort': {
+                'field': self.replication_key,
+                'order': 'ascending'
+                }
+        }
+
+        while paging:
+            response = self.client.post(self.path, json=search_query)
+
+            if 'pages' in response and response.get('pages', {}).get('next'):
+                starting_after = response.get('pages').get('next').get('starting_after')
+                search_query['pagination'].update({'starting_after': starting_after})
+            else:
+                paging = False
+
+            records = transform_json(response, self.tap_stream_id, self.data_key)
+
+            yield from records
+
 
 class Segments(IncrementalStream):
     """
@@ -578,5 +632,6 @@ STREAMS = {
     "contacts": Contacts,
     "segments": Segments,
     "tags": Tags,
-    "teams": Teams
+    "teams": Teams,
+    "admin_activity_logs": AdminActivityLogs
 }
