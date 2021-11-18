@@ -153,7 +153,8 @@ class IntercomClient(object):
                           (Server5xxError, ConnectionError, Server429Error),
                           max_tries=7,
                           factor=3)
-    @utils.ratelimit(1000, 60)
+    #@utils.ratelimit(1000, 60)
+    @utils.ratelimit(10, 10)
     def check_access_token(self):
         if self.__access_token is None:
             raise Exception('Error: Missing access_token.')
@@ -182,7 +183,8 @@ class IntercomClient(object):
                           (Server5xxError, ConnectionError, Server429Error, IntercomScrollExistsError),
                           max_tries=7,
                           factor=3)
-    @utils.ratelimit(1000, 60)
+    #@utils.ratelimit(1000, 60)
+    @utils.ratelimit(10, 10)
     def request(self, method, path=None, url=None, **kwargs):
         if not self.__verified:
             self.__verified = self.check_access_token()
