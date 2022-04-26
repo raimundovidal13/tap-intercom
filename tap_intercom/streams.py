@@ -494,7 +494,7 @@ class AdminActivityLogs(IncrementalStream):
     valid_replication_keys = ['created_at']
     data_key = 'activity_logs'
     per_page = MAX_PAGE_SIZE
-    params = {'created_at_after': self.dt_to_epoch_seconds(bookmark_datetime)}
+    params = {'created_at_after': datetime.datetime.timestamp(bookmark_datetime)}
 
 
     def get_records(self, bookmark_datetime=None, is_parent=False) -> Iterator[list]:
