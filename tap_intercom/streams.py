@@ -483,7 +483,7 @@ class Contacts(IncrementalStream):
 
 class AdminActivityLogs(IncrementalStream):
     """
-    Retrieve contacts
+    Retrieve admin activity logs 
 
     Docs: https://developers.intercom.com/intercom-api-reference/v2.0/reference#search-for-contacts
     """
@@ -494,46 +494,23 @@ class AdminActivityLogs(IncrementalStream):
     valid_replication_keys = ['created_at']
     data_key = 'activity_logs'
     per_page = MAX_PAGE_SIZE
+    params = {'created_at_after': self.dt_to_epoch_seconds(bookmark_datetime)}
 
 
     def get_records(self, bookmark_datetime=None, is_parent=False) -> Iterator[list]:
         paging = True
-        starting_after = None
-        search_query = {
-            'pagination': {
-                'per_page': self.per_page
-            },
-            'query': {
-                'operator': 'OR',
-                'value': [{
-                    'field': self.replication_key,
-                    'operator': '>',
-                    'value': self.dt_to_epoch_seconds(bookmark_datetime)
-                    },
-                    {
-                    'field': self.replication_key,
-                    'operator': '=',
-                    'value': self.dt_to_epoch_seconds(bookmark_datetime)
-                    }]
-                },
-            'sort': {
-                'field': self.replication_key,
-                'order': 'ascending'
-                }
-        }
-
+        next_page = None
+     
         while paging:
-            response = self.client.post(self.path, json=search_query)
+            response = self.client.get(self.path, url=next_page, params=self.params )
 
             if 'pages' in response and response.get('pages', {}).get('next'):
-                starting_after = response.get('pages').get('next').get('starting_after')
-                search_query['pagination'].update({'starting_after': starting_after})
+                next_page = response.get('pages', {}).get('next')
+                self.path = None
             else:
                 paging = False
 
-            records = transform_json(response, self.tap_stream_id, self.data_key)
-
-            yield from records
+            yield from response.get(self.data_key,  [])
 
 
 class Segments(IncrementalStream):
