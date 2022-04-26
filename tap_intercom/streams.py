@@ -494,15 +494,16 @@ class AdminActivityLogs(IncrementalStream):
     valid_replication_keys = ['created_at']
     data_key = 'activity_logs'
     per_page = MAX_PAGE_SIZE
-    params = {'created_at_after': datetime.datetime.timestamp(bookmark_datetime)}
+    
 
 
     def get_records(self, bookmark_datetime=None, is_parent=False) -> Iterator[list]:
         paging = True
         next_page = None
-     
+        params = {'created_at_after': datetime.datetime.timestamp(bookmark_datetime)}
+        
         while paging:
-            response = self.client.get(self.path, url=next_page, params=self.params )
+            response = self.client.get(self.path, url=next_page, params=params )
 
             if 'pages' in response and response.get('pages', {}).get('next'):
                 next_page = response.get('pages', {}).get('next')
